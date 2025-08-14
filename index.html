@@ -1,5 +1,7 @@
 <!doctype html><html lang=es><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,minimal-ui"><meta name=theme-color content=#070a14><title>Clicker — Singularidad v3</title><style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%}body{margin:0;background:#070a14;color:#eaf1ff;font:600 16px/1.2 system-ui,Segoe UI,Roboto;display:grid;place-items:center}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:contain}
+body{margin:0;background:#070a14;color:#eaf1ff;font:600 16px/1.2 system-ui,Segoe UI,Roboto;display:grid;place-items:center}
 #a{width:min(96vmin,580px);background:#0d1224;border:1px solid #223055;border-radius:20px;box-shadow:0 24px 100px rgba(0,0,0,.55);padding:10px;display:grid;gap:8px}
 #hdr{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center}
 #ico{font-size:22px}#s{font-weight:900;color:#9cc8ff}
@@ -7,7 +9,7 @@
 #keys{background:#0a1b17;border-color:#1a4}#buf{background:#2b1630;border-color:#743}
 #story{font:600 12px;color:#9db1d8}#n{font:900 40px/1.05 system-ui;letter-spacing:.5px}
 #p{height:10px;background:#0a1330;border:1px solid #1e2c55;border-radius:10px;overflow:hidden}#pb{display:block;height:100%;background:linear-gradient(90deg,#6aa8ff,#49f3a1)}
-#tap{position:sticky;bottom:0;inset-inline:0;cursor:pointer;border:0;border-radius:16px;padding:18px;background:linear-gradient(180deg,#53f4a6,#2bd07f);color:#07101a;font-weight:1000;font-size:22px;letter-spacing:.6px}
+#tap{position:sticky;bottom:0;inset-inline:0;cursor:pointer;border:0;border-radius:16px;padding:18px;background:linear-gradient(180deg,#53f4a6,#2bd07f);color:#07101a;font-weight:1000;font-size:22px;letter-spacing:.6px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #tap:active{transform:scale(.985)}
 #nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}#nav>button{all:unset;border:1px solid #243156;background:#0f172a;border-radius:12px;padding:8px 10px;cursor:pointer;text-align:center}
 #panels>section{display:none}#panels>section.on{display:grid}#shop{display:grid;gap:8px}
@@ -50,7 +52,7 @@ const D=document,$=e=>D.querySelector(e),fmt=n=>Intl.NumberFormat('es-AR',{notat
 // ---- Estado
 let st=0,nm=["Planta","Conciencia","Minería","Dominar el Mundo","Singularidad","AI","Raro","Errorezs","Glichs"],em=["🌱","🧠","⛏️","🌍","♾️","🤖","🌀","🐛","🧩"],lore=["Germina, produce savia y semillas.","Surge la autoconciencia: organiza ideas.","Extrae recursos y automatiza.","Influye mercados y gobiernos.","Tecnología se dispara a infinito.","Modelos que se entrenan solos.","Anomalías y rarezas emergen.","Aparecen errores que mutan todo.","La realidad se rompe y reescribe."],goal=[60,700,7e3,9e4,1.4e6,2.3e7,3.5e8,6e9,1.1e11];
 let r=0,tap=1,cps=0,tm=0,rare=.01,crit=.02,h=true,rm=false,aadv=true,bulk=1,autos=false,asvOn=true,sigma=0,rl={},ks=Array(nm.length).fill(0),md=Array(nm.length).fill(0).map(_=>[0,0,0]),buff=0,log=$("#log"),N=$("#n"),PB=$("#pb"),SH=$("#shop"),MIS=$("#mis"),REL=$("#rel"),STATS=$("#stats"),ICO=$("#ico"),S=$("#s"),ST=$("#story"),K=$("#keys"),B=$("#buf"),SIG=$("#sig"),toast=$("#toast");
-let ready=false,lastTap=0,combo=0;
+let ready=false,lastTap=0,combo=0,press=null;
 // ---- UI helpers
 function flash(t){log.textContent=t;setTimeout(()=>log.textContent="",900)}
 function toastMsg(t){toast.textContent=t;toast.style.display="block";setTimeout(()=>toast.style.display="none",1200)}
@@ -69,22 +71,24 @@ function drawMis(){let pct=.6-Math.min(.3,st*.03),need1=Math.ceil(goal[st]*pct),
 function grantRelic(){let all=[["🌿","tap+10%"],["⛏️","cps+15%"],["📈","+1% crit"],["🧪","+15% raros"],["🩹","corrupción-50%"]],avail=all.filter(([k])=>!rl[k]);if(!avail.length)return;let [k,txt]=avail[Math.floor(R()*avail.length)];rl[k]=1;toastMsg("Reliquia "+k+" "+txt);drawRel()}
 // ---- Mecánicas
 function gateOk(){return ks[st]>=2}
-function maybeAdvance(){if(r>=goal[st]&&st<nm.length-1){if(gateOk()){if(aadv){advance()}else{ready=true;PB.style.width="100%";B.textContent="🟢 listo";flash("Listo para avanzar (toca el título)")} }else{flash("Completa 2 misiones para avanzar");PB.style.width="99%";B.textContent="🔒"}}}
+function maybeAdvance(){if(r>=goal[st]&&st<nm.length-1){if(gateOk()){if(aadv){advance()}else{ready=true;PB.style.width="100%";B.textContent="🟢 listo";flash("Listo para avanzar (toca el título)")}}else{flash("Completa 2 misiones para avanzar");PB.style.width="99%";B.textContent="🔒"}}}
 function advance(){st++;ready=false;flash("→ "+nm[st]);grantRelic();drawShop();drawMis();drawRel();drawStats();toastMsg("Avance");upd()}
 // Tap manual/auto
-function t(auto=false){let mult=(1+(st>=3?0.2:0))*(1+(st>=5?0.3:0))*(1+sigma*.05)*(rl["🌿"]?1.1:1)*(buff>0?1.5:1),g=tap*mult;
-if(R()<crit+(rl["📈"]?0.01:0)){g*=2;rm||shake()}
-if(st>=7&&R()<.02){let m=R()<.5?0.5:2;if(rl["🩹"]&&m<1)m=1-(1-m)/2;r*=m}
-r+=g;
-if(!auto){let now=Date.now();if(now-lastTap<220){combo++}else{combo=1}lastTap=now;if(combo>=10){buff=now+3000;toastMsg("COMBO!");combo=0}}
-auto||drawMis();upd()}
+function t(auto=false){
+  let mult=(1+(st>=3?0.2:0))*(1+(st>=5?0.3:0))*(1+sigma*.05)*(rl["🌿"]?1.1:1)*(buff>0?1.5:1),g0=tap*mult;
+  let g=(R()<crit+(rl["📈"]?0.01:0)?g0*2:g0);if(g!=g0&&!rm)shake();
+  if(st>=7&&R()<.02){let m=R()<.5?0.5:2;if(rl["🩹"]&&m<1)m=1-(1-m)/2;r*=m}
+  r+=g;
+  if(!auto){let now=Date.now();combo=(now-lastTap<220)?(combo+1):1;lastTap=now;if(combo>=10){buff=now+3000;toastMsg("COMBO!");combo=0}}
+  auto||drawMis();upd()
+}
 // Tick/idle
 function tick(ti){let dt=(ti-tm)/1000;tm=ti;let mult=(1+(st>=4?0.05:0)+(st>=5?0.07:0)+sigma*0.05)*(rl["⛏️"]?1.15:1);r+=cps*dt*mult;
 if(st>=6&&R()<((rl["🧪"]?0.015:0)+rare)*dt)r+=goal[st]*(.01+R()*.02);
 if(st>=8&&R()<.03&&!rm)shake();
 if(buff>0&&Date.now()>buff)buff=0;
 upd();
-let pr=Math.max(0,Math.min(1,r/goal[st]));PB.style.width=(pr*100)+"%";
+PB.style.width=(Math.max(0,Math.min(1,r/goal[st]))*100)+"%";
 maybeAdvance();
 requestAnimationFrame(tick)}
 function shake(){D.body.style.animation="g .18s linear 2";setTimeout(()=>D.body.style.animation="",280)}
@@ -95,7 +99,14 @@ function daily(){let d=new Date().toDateString();if(localStorage.lastDay!=d){loc
 function prestige(){if(st<nm.length-1||ks[st]<2)return toastMsg("Aún no.");sigma++;SIG.textContent="Σ"+sigma;r=0;tap=1;cps=0;rare=.01;crit=.02;st=0;ks=ks.map(_=>0);md=md.map(_=>[0,0,0]);up.forEach(u=>u.c=0);flash("Prestigio +5%");drawShop();drawMis();drawRel();drawStats();save()}
 // ---- Tabs + Controles
 function switchTab(t){["shop","mis","rel","stats"].forEach(id=>{$("#"+id).classList.toggle("on",id==t)})}
-$("#tap").onpointerdown=e=>{vibr(12);let a=setInterval(()=>t(true),120);let up=()=>{clearInterval(a);D.removeEventListener("pointerup",up);};D.addEventListener("pointerup",up);t()};
+// --- Tap móvil/desktop robusto
+const tapEl=$("#tap");
+const startPress=e=>{e.preventDefault();vibr(12);if(e.pointerId&&e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId);if(press)clearInterval(press);t();press=setInterval(()=>t(true),120)};
+const endPress=()=>{if(press){clearInterval(press);press=null;}combo=0};
+["pointerdown","touchstart","mousedown"].forEach(ev=>tapEl.addEventListener(ev,startPress,{passive:false}));
+["pointerup","pointercancel","touchend","touchcancel","mouseup","mouseleave"].forEach(ev=>document.addEventListener(ev,endPress,{passive:true}));
+tapEl.oncontextmenu=e=>e.preventDefault();
+// --- Resto de controles
 $("#buy").onclick=()=>{bulk=bulk==1?10:1;$("#buy").textContent="x"+bulk;drawShop()};
 $("#auto").onclick=()=>{autos=!autos;$("#auto").textContent=autos?"⏸︎":"▶︎"};
 ["shop","mis","rel","stats"].forEach(id=>{$(`[data-t=${id}]`).onclick=()=>switchTab(id)});
@@ -107,8 +118,8 @@ $("#import").onclick=async()=>{let s=prompt("Pega tu código");if(!s)return;loca
 $("#reset").onclick=()=>{if(confirm("¿Reset?")){localStorage.removeItem("sing3");location.reload()}};
 SIG.onclick=()=>prestige();
 S.onclick=ICO.onclick=()=>{if(ready&&gateOk())advance()};
-document.addEventListener("visibilitychange",()=>{if(document.hidden)autos=false});
+document.addEventListener("visibilitychange",()=>{ if(document.hidden){ autos=false; endPress(); }});
 // ---- Boot
-function init(){load();daily();drawShop();drawMis();drawRel();drawStats();upd();switchTab("shop");SIG.textContent="Σ"+sigma;requestAnimationFrame(tick);setInterval(()=>{autos&&t(true)},220);setInterval(()=>{asvOn&&save()},5e3)}
+function init(){load();daily();drawShop();drawMis();drawRel();drawStats();upd();switchTab("shop");SIG.textContent="Σ"+sigma;$("#hap").checked=h;$("#rm").checked=rm;$("#aadv").checked=aadv;$("#asv").checked=asvOn;requestAnimationFrame(tick);setInterval(()=>{autos&&t(true)},220);setInterval(()=>{asvOn&&save()},5e3)}
 init();
 </script></body></html>
