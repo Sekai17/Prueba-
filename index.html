@@ -1,150 +1,16 @@
-<!doctype html>
-<html lang="es">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>Gatito Pixel Love Pro Max+</title>
-<style>
-html,body{height:100%;margin:0;background:#0b0f14;display:grid;place-items:center}
-canvas{width:min(95vmin,520px);height:auto;image-rendering:pixelated;border:2px solid #ff4d6d;border-radius:12px;touch-action:none}
-</style>
-<canvas id="c"></canvas>
-<script>
-const C=document.getElementById("c"),G=C.getContext("2d"),D=window.devicePixelRatio||1;
-G.imageSmoothingEnabled=!1;
-function S(){const r=C.getBoundingClientRect().width||Math.min(innerWidth,innerHeight);C.width=r*D;C.height=r*D}
-S();addEventListener("resize",S);
-
-let px=0,py=0,down=0;
-function P(e){let t=e.touches?e.touches[0]:e,r=C.getBoundingClientRect();return{x:(t.clientX-r.left)*D,y:(t.clientY-r.top)*D}}
-function on(e){down=1;let p=P(e);px=p.x;py=p.y;navigator.vibrate&&navigator.vibrate(10)}
-function mv(e){if(!down)return;let p=P(e);px=p.x;py=p.y}
-function up(){down=0}
-C.addEventListener("touchstart",on,{passive:1});
-C.addEventListener("touchmove",mv,{passive:1});
-C.addEventListener("touchend",up);
-C.addEventListener("mousedown",on);
-C.addEventListener("mousemove",mv);
-C.addEventListener("mouseup",up);
-
-const hearts=[];
-function hEmit(x,y){hearts.length<100&&hearts.push({x,y,vx:(Math.random()-.5)*40*D,vy:-90*D,a:1})}
-function drawHeart(g,x,y,s,a=1){
-    g.save();g.globalAlpha=a;g.translate(x,y);let k=s/16;g.scale(k,k);
-    g.fillStyle="#ff4d6d";
-    g.beginPath();
-    g.moveTo(0,6);
-    g.bezierCurveTo(0,-4,-8,-4,-8,2);
-    g.bezierCurveTo(-8,8,0,12,0,16);
-    g.bezierCurveTo(0,12,8,8,8,2);
-    g.bezierCurveTo(8,-4,0,-4,0,6);
-    g.fill();
-    g.restore();g.globalAlpha=1;
-}
-
-function drawCat(g,x,y,s,w,pet){
-    g.save();
-    g.translate(x,y);
-
-    // Cuerpo más compacto
-    g.fillStyle="#353c4a";
-    g.beginPath();
-    g.ellipse(0, 0, 45*s, 38*s, 0, 0, Math.PI*2);
-    g.fill();
-
-    // Cola más larga y delgada
-    g.save();
-    g.translate(50*s, 10*s);
-    g.rotate(w/200);
-    g.beginPath();
-    g.moveTo(0, 0);
-    g.quadraticCurveTo(25*s, -10*s, 50*s, 5*s);
-    g.quadraticCurveTo(25*s, 15*s, 0, 0);
-    g.fill();
-    g.restore();
-
-    // Cabeza
-    g.fillStyle="#465066";
-    g.beginPath();
-    g.arc(0,-60*s,30*s,0,Math.PI*2);
-    g.fill();
-
-    // Orejas puntiagudas
-    g.beginPath(); // Izquierda
-    g.moveTo(-20*s, -80*s);
-    g.lineTo(-8*s, -60*s);
-    g.lineTo(-30*s, -55*s);
-    g.closePath();
-    g.fill();
-    g.beginPath(); // Derecha
-    g.moveTo(20*s, -80*s);
-    g.lineTo(8*s, -60*s);
-    g.lineTo(30*s, -55*s);
-    g.closePath();
-    g.fill();
-
-    // Patitas
-    g.fillStyle="#232733";
-    g.beginPath();
-    g.arc(-28*s,22*s,12*s,0,Math.PI*2);
-    g.arc(28*s,22*s,12*s,0,Math.PI*2);
-    g.fill();
-
-    // Ojos y parpadeo
-    if(pet){
-        g.strokeStyle="#fff";
-        g.lineWidth=3*s;
-        g.beginPath();
-        g.moveTo(-12*s,-60*s);
-        g.lineTo(-3*s,-58*s);
-        g.stroke();
-        g.beginPath();
-        g.moveTo(12*s,-60*s);
-        g.lineTo(3*s,-58*s);
-        g.stroke();
-    }else{
-        g.fillStyle="#fff";
-        g.beginPath();
-        g.arc(-10*s,-60*s,3.2*s,0,Math.PI*2);
-        g.arc(10*s,-60*s,3.2*s,0,Math.PI*2);
-        g.fill();
-    }
-
-    // Nariz
-    g.fillStyle="#ff6b9a";
-    g.beginPath();
-    g.arc(0,-51*s,2.6*s,0,Math.PI*2);
-    g.fill();
-
-    g.restore();
-}
-
-let t0=0,emitT=0;
-function L(t){
-    t/=1e3;
-    let dt=Math.min(.033,t-(t0||t-.016));
-    t0=t;
-    G.clearRect(0,0,C.width,C.height);
-
-    let s=Math.min(C.width,C.height)/300,
-        cx=C.width/2, cy=C.height*.6,
-        headX=cx, headY=cy-60*s,
-        pet=down&&Math.hypot(px-headX,py-headY)<68*D,
-        w=Math.sin(t*(pet?12:5))*10*s;
-
-    drawCat(G,cx,cy,s,w,pet);
-
-    emitT+=pet?dt:0;
-    if(emitT>.08){emitT=0;hEmit(headX,headY-10*D)}
-
-    for(let i=hearts.length-1;i>=0;i--){
-        let H=hearts[i];
-        H.x+=H.vx*dt;H.y+=H.vy*dt;
-        H.vy+=30*D*dt;H.a-=.8*dt;
-        if(H.a<=0)hearts.splice(i,1);
-        else drawHeart(G,H.x,H.y,8*s*D,H.a)
-    }
-    requestAnimationFrame(L);
-}
-requestAnimationFrame(L);
+<!doctype html><html lang=es><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>Clicker — Singularidad</title><style>
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:#0b0f14;color:#eaf1ff;font:600 16px system-ui,Segoe UI,Roboto,Ubuntu,Arial;display:grid;place-items:center}#a{width:min(96vmin,520px);background:#0e1422;border:1px solid #243156;border-radius:18px;box-shadow:0 20px 80px rgba(0,0,0,.45);padding:14px;display:grid;gap:10px}h1{margin:0;font-size:20px;color:#9db1d8}#s{font-size:13px;color:#8fb3ff}#n{font:700 38px/1.1 system-ui}#tap{cursor:pointer;border:0;border-radius:16px;padding:18px;background:linear-gradient(180deg,#53f4a6,#2bd07f);color:#07101a;font-weight:900;font-size:20px}#tap:active{transform:scale(.98)}#p{height:10px;background:#101b2f;border:1px solid #223058;border-radius:10px;overflow:hidden}#pb{display:block;height:100%;background:linear-gradient(90deg,#6aa8ff,#49f3a1)}#shop{display:grid;gap:8px}button.b{all:unset;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;border:1px solid #243156;background:#0f1728;border-radius:14px;padding:12px;cursor:pointer}button.b:active{transform:scale(.99)}.t{color:#c9e4ff}.c{color:#9bd2ff;font-weight:800}#log{min-height:20px;color:#a8ffd7;font-size:12px;opacity:.9}small{color:#8aa0c6}
+@keyframes g{0%{transform:translate(0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(0)}}
+</style><body><main id=a><h1>Clicker — <span id=s></span></h1><div id=n>Ω 0</div><div id=p><i id=pb style="width:0%"></i></div><button id=tap>TOCAR</button><section id=shop></section><div id=log></div><small>Etapas: Planta → Conciencia → Minería → Dominar el Mundo → Singularidad → AI → Raro → Errorezs → Glichs</small></main><script>
+const d=document,q=e=>d.querySelector(e),fmt=n=>Intl.NumberFormat('es-AR',{notation:n>9999?'compact':'standard',maximumFractionDigits:2}).format(n);let st=0,nm=["Planta","Conciencia","Minería","Dominar el Mundo","Singularidad","AI","Raro","Errorezs","Glichs"],goal=[50,600,6000,8e4,1.2e6,2e7,3e8,5e9,9e10],r=0,tap=1,cps=0,tm=0,rare=0,log=q("#log"),s=q("#s"),n=q("#n"),pb=q("#pb"),shop=q("#shop");s.textContent=nm[st];
+let up=[{k:"tap",n:"+TOQUE",b:10,m:1.5,g:1,info:()=>`+${fmt(Math.max(1,Math.floor(tap*.15)))}/tap`},{k:"auto",n:"AUTO",b:25,m:1.6,g:.5,info:()=>`+${fmt(Math.max(.1,+(cps*.12).toFixed(2)))}/s`},{k:"caos",n:"CAOS",b:120,m:2.1,g:1,info:()=>"eventos raros↑"}].map(u=>({...u,c:0}));
+function price(u){return Math.ceil(u.b*Math.pow(u.m,u.c))}
+function drawShop(){shop.innerHTML="";up.forEach(u=>{let b=d.createElement("button");b.className="b";let t=d.createElement("div");t.className="t";t.textContent=u.n+" · "+u.info();let c=d.createElement("div");c.className="c";c.textContent="$"+fmt(price(u));b.append(t,c);b.onclick=()=>buy(u);shop.append(b)})}
+function buy(u){let p=price(u);if(r<p)return flash("Faltan Ω");r-=p;u.c++;if(u.k=="tap"){tap+=Math.max(1,Math.floor(tap*.15))}if(u.k=="auto"){let add=Math.max(.1,+(cps*.12).toFixed(2));cps+=add}if(u.k=="caos"){rare+=.015}drawShop();flash("¡Mejora!")}
+function flash(t){log.textContent=t;setTimeout(()=>log.textContent="",900)}
+q("#tap").onclick=()=>{let g=tap*(1+(st>=3?.2:0))*(1+(st>=5?.3:0));if(st>=7&&Math.random()<.02)g*=Math.random()<.5?.5:2;r+=g;n.textContent="Ω "+fmt(r)}
+function stageFX(){if(st==1){tap*=2;flash("La planta piensa.")}if(st==2){cps+=2;flash("Minería iniciada.")}if(st==3){tap*=2;cps*=1.8;flash("Influencia global.")}if(st==4){flash("Tecno-singularidad suave.")}if(st==5){flash("AI optimiza todo.")}if(st==6){rare+=.02;flash("Raros caen del cielo.")}if(st==7){flash("Errorezs mutan valores.")}if(st==8){flash("Glichs distorsionan la realidad.")}drawShop()}
+function tick(t){let dt=(t-tm)/1000;tm=t;let mult=1+(st>=4?.05:0)+(st>=5?.07:0);r+=cps*dt*mult;if(st>=6&&Math.random()<rare*dt)r+=goal[st]*(.01+Math.random()*.02);if(st>=7&&Math.random()<.02){r*=.98+Math.random()*.04}if(st>=8&&Math.random()<.03){document.body.style.animation="g .18s linear 2";setTimeout(()=>document.body.style.animation="",300)}n.textContent="Ω "+fmt(r);let pr=Math.max(0,Math.min(1,r/goal[st]));pb.style.width=(pr*100)+"%";if(r>=goal[st]&&st<nm.length-1){st++;s.textContent=nm[st];flash("→ "+nm[st]);stageFX()}requestAnimationFrame(tick)}
+drawShop();requestAnimationFrame(tick);
 </script>
-</html>
+</body></html>
