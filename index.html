@@ -1,1 +1,150 @@
-<!doctype html><html lang=es><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>Gatito Pixel Love</title><style>html,body{height:100%;margin:0;background:#0b0f14;display:grid;place-items:center}canvas{width:min(95vmin,520px);height:auto;image-rendering:pixelated;border:2px solid #ff4d6d;border-radius:12px;touch-action:none}</style><canvas id=c></canvas><script>const C=document.getElementById("c"),G=C.getContext("2d"),D=window.devicePixelRatio||1;G.imageSmoothingEnabled=!1;function S(){const r=C.getBoundingClientRect().width||Math.min(innerWidth,innerHeight);C.width=r*D;C.height=r*D}S();addEventListener("resize",S);let px=0,py=0,down=0;function P(e){let t=e.touches?e.touches[0]:e,r=C.getBoundingClientRect();return{x:(t.clientX-r.left)*D,y:(t.clientY-r.top)*D}}function on(e){down=1;let p=P(e);px=p.x;py=p.y;navigator.vibrate&&navigator.vibrate(10)}function mv(e){if(!down)return;let p=P(e);px=p.x;py=p.y}function up(){down=0}C.addEventListener("touchstart",on,{passive:1});C.addEventListener("touchmove",mv,{passive:1});C.addEventListener("touchend",up);C.addEventListener("mousedown",on);C.addEventListener("mousemove",mv);C.addEventListener("mouseup",up);const hearts=[];function hEmit(x,y){hearts.length<100&&hearts.push({x,y,vx:(Math.random()-.5)*40*D,vy:-90*D,a:1})}function drawHeart(g,x,y,s,a=1){g.save();g.globalAlpha=a;g.translate(x,y);let k=s/16;g.scale(k,k);g.fillStyle="#ff4d6d";g.beginPath();g.moveTo(0,6);g.bezierCurveTo(0,-4,-8,-4,-8,2);g.bezierCurveTo(-8,8,0,12,0,16);g.bezierCurveTo(0,12,8,8,8,2);g.bezierCurveTo(8,-4,0,-4,0,6);g.fill();g.restore();g.globalAlpha=1}function drawCat(g,x,y,s,w,pet){g.save();g.translate(x,y);g.fillStyle="#353c4a";g.beginPath();g.ellipse(0,0,55*s,40*s,0,0,6.283);g.fill();g.save();g.translate(58*s,0);g.rotate(w/220);g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(40*s,-10*s,52*s,0);g.quadraticCurveTo(40*s,10*s,0,0);g.fill();g.restore();g.fillStyle="#465066";g.beginPath();g.arc(0,-60*s,30*s,0,6.283);g.fill();g.beginPath();g.moveTo(-22*s,-78*s);g.lineTo(-6*s,-64*s);g.lineTo(-30*s,-60*s);g.fill();g.beginPath();g.moveTo(22*s,-78*s);g.lineTo(6*s,-64*s);g.lineTo(30*s,-60*s);g.fill();g.fillStyle="#232733";g.beginPath();g.arc(-28*s,22*s,12*s,0,6.283);g.arc(28*s,22*s,12*s,0,6.283);g.fill();if(pet){g.strokeStyle="#fff";g.lineWidth=3*s;g.beginPath();g.moveTo(-12*s,-60*s);g.lineTo(-3*s,-58*s);g.stroke();g.beginPath();g.moveTo(12*s,-60*s);g.lineTo(3*s,-58*s);g.stroke()}else{g.fillStyle="#fff";g.beginPath();g.arc(-10*s,-60*s,3.2*s,0,6.283);g.arc(10*s,-60*s,3.2*s,0,6.283);g.fill()}g.fillStyle="#ff6b9a";g.beginPath();g.arc(0,-51*s,2.6*s,0,6.283);g.fill();g.restore()}let t0=0,emitT=0;function L(t){t/=1e3;let dt=Math.min(.033,t-(t0||t-.016));t0=t;G.clearRect(0,0,C.width,C.height);let s=Math.min(C.width,C.height)/300, cx=C.width/2, cy=C.height*.6, headX=cx, headY=cy-60*s, pet=down&&Math.hypot(px-headX,py-headY)<68*D, w=Math.sin(t*(pet?12:5))*10*s;drawCat(G,cx,cy,s,w,pet);emitT+=pet?dt:0;if(emitT>.08){emitT=0;hEmit(headX,headY-10*D)}for(let i=hearts.length-1;i>=0;i--){let H=hearts[i];H.x+=H.vx*dt;H.y+=H.vy*dt;H.vy+=30*D*dt;H.a-=.8*dt;if(H.a<=0)hearts.splice(i,1);else drawHeart(G,H.x,H.y,8*s*D,H.a)}requestAnimationFrame(L)}requestAnimationFrame(L);</script>```
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Gatito Pixel Love Pro Max+</title>
+<style>
+html,body{height:100%;margin:0;background:#0b0f14;display:grid;place-items:center}
+canvas{width:min(95vmin,520px);height:auto;image-rendering:pixelated;border:2px solid #ff4d6d;border-radius:12px;touch-action:none}
+</style>
+<canvas id="c"></canvas>
+<script>
+const C=document.getElementById("c"),G=C.getContext("2d"),D=window.devicePixelRatio||1;
+G.imageSmoothingEnabled=!1;
+function S(){const r=C.getBoundingClientRect().width||Math.min(innerWidth,innerHeight);C.width=r*D;C.height=r*D}
+S();addEventListener("resize",S);
+
+let px=0,py=0,down=0;
+function P(e){let t=e.touches?e.touches[0]:e,r=C.getBoundingClientRect();return{x:(t.clientX-r.left)*D,y:(t.clientY-r.top)*D}}
+function on(e){down=1;let p=P(e);px=p.x;py=p.y;navigator.vibrate&&navigator.vibrate(10)}
+function mv(e){if(!down)return;let p=P(e);px=p.x;py=p.y}
+function up(){down=0}
+C.addEventListener("touchstart",on,{passive:1});
+C.addEventListener("touchmove",mv,{passive:1});
+C.addEventListener("touchend",up);
+C.addEventListener("mousedown",on);
+C.addEventListener("mousemove",mv);
+C.addEventListener("mouseup",up);
+
+const hearts=[];
+function hEmit(x,y){hearts.length<100&&hearts.push({x,y,vx:(Math.random()-.5)*40*D,vy:-90*D,a:1})}
+function drawHeart(g,x,y,s,a=1){
+    g.save();g.globalAlpha=a;g.translate(x,y);let k=s/16;g.scale(k,k);
+    g.fillStyle="#ff4d6d";
+    g.beginPath();
+    g.moveTo(0,6);
+    g.bezierCurveTo(0,-4,-8,-4,-8,2);
+    g.bezierCurveTo(-8,8,0,12,0,16);
+    g.bezierCurveTo(0,12,8,8,8,2);
+    g.bezierCurveTo(8,-4,0,-4,0,6);
+    g.fill();
+    g.restore();g.globalAlpha=1;
+}
+
+function drawCat(g,x,y,s,w,pet){
+    g.save();
+    g.translate(x,y);
+
+    // Cuerpo más compacto
+    g.fillStyle="#353c4a";
+    g.beginPath();
+    g.ellipse(0, 0, 45*s, 38*s, 0, 0, Math.PI*2);
+    g.fill();
+
+    // Cola más larga y delgada
+    g.save();
+    g.translate(50*s, 10*s);
+    g.rotate(w/200);
+    g.beginPath();
+    g.moveTo(0, 0);
+    g.quadraticCurveTo(25*s, -10*s, 50*s, 5*s);
+    g.quadraticCurveTo(25*s, 15*s, 0, 0);
+    g.fill();
+    g.restore();
+
+    // Cabeza
+    g.fillStyle="#465066";
+    g.beginPath();
+    g.arc(0,-60*s,30*s,0,Math.PI*2);
+    g.fill();
+
+    // Orejas puntiagudas
+    g.beginPath(); // Izquierda
+    g.moveTo(-20*s, -80*s);
+    g.lineTo(-8*s, -60*s);
+    g.lineTo(-30*s, -55*s);
+    g.closePath();
+    g.fill();
+    g.beginPath(); // Derecha
+    g.moveTo(20*s, -80*s);
+    g.lineTo(8*s, -60*s);
+    g.lineTo(30*s, -55*s);
+    g.closePath();
+    g.fill();
+
+    // Patitas
+    g.fillStyle="#232733";
+    g.beginPath();
+    g.arc(-28*s,22*s,12*s,0,Math.PI*2);
+    g.arc(28*s,22*s,12*s,0,Math.PI*2);
+    g.fill();
+
+    // Ojos y parpadeo
+    if(pet){
+        g.strokeStyle="#fff";
+        g.lineWidth=3*s;
+        g.beginPath();
+        g.moveTo(-12*s,-60*s);
+        g.lineTo(-3*s,-58*s);
+        g.stroke();
+        g.beginPath();
+        g.moveTo(12*s,-60*s);
+        g.lineTo(3*s,-58*s);
+        g.stroke();
+    }else{
+        g.fillStyle="#fff";
+        g.beginPath();
+        g.arc(-10*s,-60*s,3.2*s,0,Math.PI*2);
+        g.arc(10*s,-60*s,3.2*s,0,Math.PI*2);
+        g.fill();
+    }
+
+    // Nariz
+    g.fillStyle="#ff6b9a";
+    g.beginPath();
+    g.arc(0,-51*s,2.6*s,0,Math.PI*2);
+    g.fill();
+
+    g.restore();
+}
+
+let t0=0,emitT=0;
+function L(t){
+    t/=1e3;
+    let dt=Math.min(.033,t-(t0||t-.016));
+    t0=t;
+    G.clearRect(0,0,C.width,C.height);
+
+    let s=Math.min(C.width,C.height)/300,
+        cx=C.width/2, cy=C.height*.6,
+        headX=cx, headY=cy-60*s,
+        pet=down&&Math.hypot(px-headX,py-headY)<68*D,
+        w=Math.sin(t*(pet?12:5))*10*s;
+
+    drawCat(G,cx,cy,s,w,pet);
+
+    emitT+=pet?dt:0;
+    if(emitT>.08){emitT=0;hEmit(headX,headY-10*D)}
+
+    for(let i=hearts.length-1;i>=0;i--){
+        let H=hearts[i];
+        H.x+=H.vx*dt;H.y+=H.vy*dt;
+        H.vy+=30*D*dt;H.a-=.8*dt;
+        if(H.a<=0)hearts.splice(i,1);
+        else drawHeart(G,H.x,H.y,8*s*D,H.a)
+    }
+    requestAnimationFrame(L);
+}
+requestAnimationFrame(L);
+</script>
+</html>
