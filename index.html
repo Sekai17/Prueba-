@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pregunta Importante</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 60px;
+    }
+
+    .boton {
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 40px;
+      transition: transform 0.2s;
+    }
+
+    #si {
+      background-color: #28a745;
+      color: white;
+      position: absolute;
+    }
+
+    #no {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    #intentos {
+      font-size: 20px;
+      margin-top: 30px;
+    }
+
+    #mensajeTriste {
+      display: none;
+      font-size: 32px;
+      color: red;
+      animation: glitch 0.3s infinite;
+      margin-top: 50px;
+    }
+
+    @keyframes glitch {
+      0% { text-shadow: 2px 2px red; }
+      50% { text-shadow: -2px -2px blue; }
+      100% { text-shadow: 2px 2px red; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>¿Me amas?</h1>
+  <button id="si" class="boton">Sí</button>
+  <button id="no" class="boton">No</button>
+  <p id="intentos">Intentos: 0</p>
+  <p id="mensajeTriste">¡SISTEMA COLAPSADO! El amor ha sido negado.</p>
+
+  <script>
+    const si = document.getElementById("si");
+    const no = document.getElementById("no");
+    const intentos = document.getElementById("intentos");
+    const mensaje = document.getElementById("mensajeTriste");
+
+    let frases = [
+      "¿Estás segura?",
+      "¡No tan fácil!",
+      "Inténtalo otra vez",
+      "¡Casi lo logras!",
+      "Más rápido que tú"
+    ];
+
+    let contador = 0;
+
+    si.addEventListener("mouseover", () => {
+      const x = Math.floor(Math.random() * (window.innerWidth - 200));
+      const y = Math.floor(Math.random() * (window.innerHeight - 100));
+      si.style.left = x + "px";
+      si.style.top = y + "px";
+      si.textContent = frases[Math.floor(Math.random() * frases.length)];
+      intentos.textContent = "Intentos: " + (++contador);
+    });
+
+    no.addEventListener("click", () => {
+      si.style.display = "none";
+      no.style.display = "none";
+      mensaje.style.display = "block";
+      document.body.style.backgroundColor = "#111";
+    });
+  </script>
+
+</body>
+</html>
