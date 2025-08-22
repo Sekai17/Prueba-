@@ -1,0 +1,132 @@
+/* Mobile-first, tipografía clara y centro perfecto */
+:root{
+  --bg: #0f1220;
+  --fg: #f4f7ff;
+  --muted: #b8c0ff;
+  --card: #171a2e;
+  --accent: #7aa2ff;
+  --ring: rgba(122,162,255,.45);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(122,162,255,.25), transparent 60%),
+    radial-gradient(1200px 600px at 10% 110%, rgba(122,255,188,.18), transparent 60%),
+    var(--bg);
+  color:var(--fg);
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height:1.4;
+}
+
+.wrap{
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  padding:clamp(16px, 4vw, 40px);
+}
+
+.top{
+  width:min(100%, 980px);
+}
+
+h1{
+  font-size:clamp(1.25rem, 4vw, 2rem);
+  margin:0 0 .25rem;
+}
+
+.hint{
+  margin:.25rem 0 1rem;
+  color:var(--muted);
+  font-size:.95rem;
+}
+
+.idiomas{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:grid;
+  grid-template-columns: repeat( auto-fit, minmax(180px, 1fr) );
+  gap:.75rem;
+}
+
+.idiomas li{
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:.75rem .9rem;
+}
+
+.idiomas .lang{
+  display:block;
+  font-weight:600;
+}
+
+.idiomas .phrase{
+  display:block;
+  color:var(--muted);
+  font-size:.95rem;
+  margin-top:.15rem;
+  word-break:break-word;
+}
+
+.center{
+  flex:1;
+  display:grid;
+  place-items:center;
+  width:100%;
+}
+
+.btn{
+  font-size:clamp(1.25rem, 6vw, 2.25rem);
+  font-weight:800;
+  padding:clamp(14px, 3.5vw, 22px) clamp(22px, 6vw, 36px);
+  color:var(--fg);
+  background:linear-gradient(135deg, #5b8cff, #7affc1);
+  border:none;
+  border-radius:22px;
+  box-shadow:
+    0 10px 30px rgba(122,162,255,.25),
+    0 2px 8px rgba(0,0,0,.25) inset;
+  transform:translateZ(0);
+  letter-spacing:.5px;
+  cursor:pointer;
+  transition:transform .08s ease, box-shadow .2s ease, filter .2s ease;
+  outline:2px solid transparent;
+  outline-offset:3px;
+}
+.btn:active{ transform:scale(.98) }
+.btn:focus-visible{
+  outline-color:var(--accent);
+  box-shadow:0 0 0 8px var(--ring), 0 10px 30px rgba(122,162,255,.25);
+}
+
+/* Animación suave al cambiar de idioma */
+@keyframes popIn {
+  0%   { transform: translateY(6px) scale(.98); opacity: 0; }
+  100% { transform: translateY(0)    scale(1);  opacity: 1; }
+}
+.btn.pop {
+  animation: popIn .18s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .btn{ transition:none }
+  .btn.pop{ animation:none }
+}
+
+.foot{
+  opacity:.9;
+  font-size:.9rem;
+  text-align:center;
+}
+
+/* Soporte desktop amplio */
+@media (min-width: 960px){
+  .wrap{ gap: 2.5rem }
+}

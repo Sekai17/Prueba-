@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Te amo — Multi-idioma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <h1>“Te amo” en varios idiomas</h1>
+      <p class="hint">Lista breve (20). El botón de abajo cambia de idioma cada vez que lo tocás. Recuerda el último que usaste.</p>
+      <ul id="idiomas" class="idiomas" aria-label="Lista de traducciones de Te amo">
+        <!-- Rellenado por app.js -->
+      </ul>
+    </header>
+
+    <section class="center">
+      <button id="botonAmor" class="btn" aria-live="polite" aria-label="Botón Te amo en diferentes idiomas">
+        Te amo
+      </button>
+    </section>
+
+    <footer class="foot">
+      <small>Hecho con ♥ — funciona offline, responsive y sin librerías.</small>
+    </footer>
+  </main>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
